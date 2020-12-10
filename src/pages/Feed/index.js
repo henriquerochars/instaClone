@@ -6,15 +6,15 @@ import { Post, Header, Avatar, Name, PostImage, Description } from './styles'
 const Feed = () => {
   const [feed, setFeed] = useState([])
 
+  async function loadFeed() {
+    const response = await fetch("http://127.0.0.1:3000/feed?_expand=author&_limit=5&_page=1")
+
+    const data = await response.json()
+
+    setFeed(data)
+  }
+
   useEffect(() => {
-    async function loadFeed() {
-      const response = await fetch('http://localhost:3000/feed?_expand=author&_limit=5&_page=1')
-
-      const data = await response.json()
-
-      setFeed(data)
-    }
-
     loadFeed()
   }, [])
 
@@ -29,7 +29,7 @@ const Feed = () => {
           <Name>{item.author.name}</Name>
         </Header>
 
-        <PostImage source={{ uri: item.image }} />
+        <PostImage ratio={item.aspectRatio} source={{ uri: item.image }} />
 
         <Description>
           <Name>{item.author.name}</Name> {item.description}
