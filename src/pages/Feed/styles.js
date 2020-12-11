@@ -29,12 +29,12 @@ export const Description = styled.Text`
 
 export const Loading = styled.ActivityIndicator.attrs({
   size: 'small',
-  color: '#999'
+  color: '#999',
 })`
   margin: 30px 0;
 `;
 
 export const PostImage = styled.Image`
   width: 100%;
-  aspect-ratio: ${props => props.ratio}
+  aspect-ratio: ${(props) => props.ratio};
 `;
