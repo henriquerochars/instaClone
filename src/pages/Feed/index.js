@@ -3,6 +3,8 @@ import { View, FlatList } from 'react-native';
 
 import LazyImage from '../../components/LazyImage';
 
+import { loadPage } from '../../service/api';
+
 import { Post, Header, Avatar, Name, Description, Loading } from './styles';
 
 const Feed = () => {
@@ -13,32 +15,22 @@ const Feed = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [viewable, setViewable] = useState([]);
 
-  async function loadPage(pageNumber = page, shouldRefresh = false) {
-    if (total && pageNumber > total) return;
-
-    setLoading(true);
-
-    // eslint-disable-next-line no-undef
-    const response = await fetch(
-      `http://localhost:3000/feed?_expand=author&_limit=5&_page=${pageNumber}`
-    );
-
-    const data = await response.json();
-    const totalItems = response.headers.get('X-Total-Count');
-
-    setTotal(Math.floor(totalItems / 5));
-    setFeed(shouldRefresh ? data : [...feed, ...data]);
-    setPage(page + 1);
-    setLoading(false);
-  }
-
   useEffect(() => {
-    loadPage();
+    loadPage(page, false, total, setLoading, setTotal, setFeed, setPage, feed);
   }, []);
 
   async function refreshList() {
     setRefreshing(true);
-    await loadPage(1, true);
+    await loadPage(
+      1,
+      true,
+      total,
+      setLoading,
+      setTotal,
+      setFeed,
+      setPage,
+      feed
+    );
     setRefreshing(false);
   }
 
@@ -51,7 +43,18 @@ const Feed = () => {
       <FlatList
         data={feed}
         keyExtractor={(post) => String(post.id)}
-        onEndReached={() => loadPage()}
+        onEndReached={() =>
+          loadPage(
+            page,
+            false,
+            total,
+            setLoading,
+            setTotal,
+            setFeed,
+            setPage,
+            feed
+          )
+        }
         onEndReachedThreshold={0.1}
         ListFooterComponent={loading && <Loading />}
         onViewableItemsChanged={handleViewableChanged}
